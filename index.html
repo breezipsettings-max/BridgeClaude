@@ -28,11 +28,8 @@
       max-width: 720px;
       margin: 0 auto;
       padding: 24px;
-      display: flex;
-      flex-direction: column;
     }
     #messages {
-      flex: 1;
       background: #ffffff;
       border: 1px solid #e5e5e4;
       border-radius: 12px;
@@ -51,10 +48,7 @@
     }
     .user { background: #e8f0fe; margin-left: auto; }
     .bot { background: #f0f0ef; }
-    form {
-      display: flex;
-      gap: 8px;
-    }
+    form { display: flex; gap: 8px; }
     input {
       flex: 1;
       padding: 12px;
@@ -71,7 +65,6 @@
       color: #ffffff;
       cursor: pointer;
     }
-    button:disabled { opacity: 0.6; cursor: default; }
     footer {
       text-align: center;
       padding: 16px;
@@ -90,7 +83,7 @@
 
     <form id="chat-form">
       <input id="message" type="text" placeholder="Type your message..." autocomplete="off" required>
-      <button id="send" type="submit">Send</button>
+      <button type="submit">Send</button>
     </form>
   </main>
 
@@ -99,40 +92,20 @@
   <script>
     const form = document.getElementById("chat-form");
     const input = document.getElementById("message");
-    const sendBtn = document.getElementById("send");
     const messages = document.getElementById("messages");
 
-    function addMessage(text, type) {
-      const div = document.createElement("div");
-      div.className = "msg " + type;
-      div.textContent = text;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       const text = input.value.trim();
       if (!text) return;
 
-      addMessage(text, "user");
+      const div = document.createElement("div");
+      div.className = "msg user";
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
       input.value = "";
-      sendBtn.disabled = true;
-
-      try {
-        const res = await fetch("/api/message", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
-        });
-        const data = await res.json();
-        addMessage(data.reply || data.error || "No response.", "bot");
-      } catch (err) {
-        addMessage("Something went wrong. Please try again.", "bot");
-      } finally {
-        sendBtn.disabled = false;
-        input.focus();
-      }
+      input.focus();
     });
   </script>
 </body>
